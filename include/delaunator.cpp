@@ -99,19 +99,19 @@ inline Point circumcenter(
 
 struct compare {
 
-    std::vector<double> const& coords;
-    std::vector<double> dists;
+    std::vector<double> const& m_coords;
+    std::vector<double> m_dists;
 
     compare(std::vector<double> const& coords, const Point& center) :
-        coords(coords)
+        m_coords(coords)
     {
-        size_t n = coords.size() / 2;
-        dists.reserve(n);
-        double const *xcoord = coords.data();
-        double const *ycoord = coords.data() + 1;
+        size_t n = m_coords.size() / 2;
+        m_dists.reserve(n);
+        double const *xcoord = m_coords.data();
+        double const *ycoord = m_coords.data() + 1;
         while (n--)
         {
-            dists.push_back(dist(*xcoord, *ycoord, center.x(), center.y()));
+            m_dists.push_back(dist(*xcoord, *ycoord, center.x(), center.y()));
             xcoord += 2;
             ycoord += 2;
         }
@@ -119,9 +119,9 @@ struct compare {
 
     bool operator()(std::size_t i, std::size_t j)
     {
-        const double diff1 = dists[i] - dists[j];
-        const double diff2 = coords[2 * i] - coords[2 * j];
-        const double diff3 = coords[2 * i + 1] - coords[2 * j + 1];
+        const double diff1 = m_dists[i] - m_dists[j];
+        const double diff2 = m_coords[2 * i] - m_coords[2 * j];
+        const double diff3 = m_coords[2 * i + 1] - m_coords[2 * j + 1];
 
         //ABELL - Not sure why we're not just checking != 0 here.
         if (diff1 > 0.0 || diff1 < 0.0) {
