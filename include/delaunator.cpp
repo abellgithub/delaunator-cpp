@@ -264,7 +264,7 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         }
     }
 
-    if (!(min_radius < (std::numeric_limits<double>::max()))) {
+    if (!(min_radius < (std::numeric_limits<double>::max)())) {
         throw std::runtime_error("not triangulation");
     }
 
