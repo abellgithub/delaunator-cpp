@@ -251,7 +251,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
     double min_radius = (std::numeric_limits<double>::max)();
 
-    // find the third point which forms the smallest circumcircle with the first two
+    // find the third point which forms the smallest circumcircle
+    // with the first two
     for (std::size_t i = 0; i < n; i++) {
         if (i == i0 || i == i1) continue;
 
@@ -283,7 +284,7 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     std::sort(ids.begin(), ids.end(), compare{ coords, m_center });
 
     // initialize a hash table for storing edges of the advancing convex hull
-    m_hash_size = static_cast<std::size_t>(std::llround(std::ceil(std::sqrt(n))));
+    m_hash_size = static_cast<std::size_t>(std::ceil(std::sqrt(n)));
     m_hash.resize(m_hash_size);
     std::fill(m_hash.begin(), m_hash.end(), INVALID_INDEX);
 
@@ -308,25 +309,31 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     m_hash[hash_key(i1x, i1y)] = i1;
     m_hash[hash_key(i2x, i2y)] = i2;
 
+    // ABELL - Why are we doing this is n < 3?  There is no triangulation if
+    //  there is no triangle.
+
     std::size_t max_triangles = n < 3 ? 1 : 2 * n - 5;
     triangles.reserve(max_triangles * 3);
     halfedges.reserve(max_triangles * 3);
     add_triangle(i0, i1, i2, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX);
     double xp = std::numeric_limits<double>::quiet_NaN();
     double yp = std::numeric_limits<double>::quiet_NaN();
+
+    // Go through points based on distance from the center.
     for (std::size_t k = 0; k < n; k++) {
         const std::size_t i = ids[k];
         const double x = coords[2 * i];
         const double y = coords[2 * i + 1];
 
         // skip near-duplicate points
-        if (k > 0 && check_pts_equal(x, y, xp, yp)) continue;
+        if (k > 0 && check_pts_equal(x, y, xp, yp))
+            continue;
         xp = x;
         yp = y;
 
+        //ABELL - This is dumb.  We have the indices.  Use them.
         // skip seed triangle points
-        if (
-            check_pts_equal(x, y, i0x, i0y) ||
+        if (check_pts_equal(x, y, i0x, i0y) ||
             check_pts_equal(x, y, i1x, i1y) ||
             check_pts_equal(x, y, i2x, i2y)) continue;
 
@@ -336,14 +343,31 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         size_t key = hash_key(x, y);
         for (size_t j = 0; j < m_hash_size; j++) {
             start = m_hash[fast_mod(key + j, m_hash_size)];
-            if (start != INVALID_INDEX && start != hull_next[start]) break;
+
+            // ABELL - Not sure how hull_next[start] could ever equal start
+            // I *think* hull_next is just a representation of the hull in one
+            // direction.
+            if (start != INVALID_INDEX && start != hull_next[start])
+                break;
         }
+
+        //ABELL
+        // Make sure what we found is on the hull.
+        assert(hull_prev[start] != start);
+        assert(hull_prev[start] != INVALID_INDEX);
 
         start = hull_prev[start];
         size_t e = start;
         size_t q;
 
-        while (q = hull_next[e], !orient(x, y, coords[2 * e], coords[2 * e + 1], coords[2 * q], coords[2 * q + 1])) { //TODO: does it works in a same way as in JS
+        //ABELL - Make sure that start and e are linked.
+
+        //Advance until we find a place in the hull where our current point
+        // can be added.
+        while (q = hull_next[e],
+            !orient(x, y, coords[2 * e], coords[2 * e + 1],
+                coords[2 * q], coords[2 * q + 1]))
+        {
             e = q;
             if (e == start) {
                 e = INVALID_INDEX;
@@ -351,7 +375,10 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
             }
         }
 
-        if (e == INVALID_INDEX) continue; // likely a near-duplicate point; skip it
+        // ABELL
+        // This seems wrong.  Perhaps we should check what's going on?
+        if (e == INVALID_INDEX)     // likely a near-duplicate point; skip it
+            continue;
 
         // add the first triangle from the point
         std::size_t t = add_triangle(
@@ -362,16 +389,20 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
             INVALID_INDEX,
             hull_tri[e]);
 
-        hull_tri[i] = legalize(t + 2);
+        hull_tri[i] = legalize(t + 2); // Legalize the triangle we just added.
         hull_tri[e] = t;
         hull_size++;
 
-        // walk forward through the hull, adding more triangles and flipping recursively
+        // walk forward through the hull, adding more triangles and
+        // flipping recursively
         std::size_t next = hull_next[e];
         while (
             q = hull_next[next],
-            orient(x, y, coords[2 * next], coords[2 * next + 1], coords[2 * q], coords[2 * q + 1])) {
-            t = add_triangle(next, i, q, hull_tri[i], INVALID_INDEX, hull_tri[next]);
+            orient(x, y, coords[2 * next], coords[2 * next + 1],
+                coords[2 * q], coords[2 * q + 1]))
+        {
+            t = add_triangle(next, i, q,
+                hull_tri[i], INVALID_INDEX, hull_tri[next]);
             hull_tri[i] = legalize(t + 2);
             hull_next[next] = next; // mark as removed
             hull_size--;
@@ -382,8 +413,11 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         if (e == start) {
             while (
                 q = hull_prev[e],
-                orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e], coords[2 * e + 1])) {
-                t = add_triangle(q, i, e, INVALID_INDEX, hull_tri[e], hull_tri[q]);
+                orient(x, y, coords[2 * q], coords[2 * q + 1], coords[2 * e],
+                       coords[2 * e + 1]))
+            {
+                t = add_triangle(q, i, e,
+                    INVALID_INDEX, hull_tri[e], hull_tri[q]);
                 legalize(t + 2);
                 hull_tri[q] = t;
                 hull_next[e] = e; // mark as removed
@@ -408,7 +442,8 @@ double Delaunator::get_hull_area() {
     std::vector<double> hull_area;
     size_t e = hull_start;
     do {
-        hull_area.push_back((coords[2 * e] - coords[2 * hull_prev[e]]) * (coords[2 * e + 1] + coords[2 * hull_prev[e] + 1]));
+        hull_area.push_back((coords[2 * e] - coords[2 * hull_prev[e]]) *
+                            (coords[2 * e + 1] + coords[2 * hull_prev[e] + 1]));
         e = hull_next[e];
     } while (e != hull_start);
     return sum(hull_area);
@@ -477,7 +512,8 @@ std::size_t Delaunator::legalize(std::size_t a) {
 
             auto hbl = halfedges[bl];
 
-            // edge swapped on the other side of the hull (rare); fix the halfedge reference
+            // Edge swapped on the other side of the hull (rare).
+            // Fix the halfedge reference
             if (hbl == INVALID_INDEX) {
                 std::size_t e = hull_start;
                 do {

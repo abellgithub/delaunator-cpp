@@ -1,0 +1,10 @@
+if(NOT ROOT_DIR)
+    message(FATAL_ERROR "ROOT_DIR must be set in top-level CMakeLists.txt")
+endif()
+set(D_SRC_DIR ${ROOT_DIR}/include)
+set(D_INCLUDE_DIR ${ROOT_DIR}/include)
+set(D_BIN_DIR ${CMAKE_BINARY_DIR}/bin)
+set(D_CMAKE_DIR ${ROOT_DIR}/cmake)
+set(D_GTEST_DIR ${ROOT_DIR}/gtest)
+set(D_GTEST_INCLUDE_DIR ${ROOT_DIR}/gtest/include)
+
