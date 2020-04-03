@@ -103,7 +103,8 @@ struct compare {
     std::vector<double> m_dists;
 
     compare(std::vector<double> const& coords, const Point& center) :
-        m_coords(coords)
+      m_coords(coords),
+      m_dists()
     {
         size_t n = m_coords.size() / 2;
         m_dists.reserve(n);
@@ -192,6 +193,7 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
       hull_tri(),
       hull_start(),
       m_hash(),
+      m_center(),
       m_hash_size(),
       m_edge_stack() {
     std::size_t n = coords.size() >> 1;
