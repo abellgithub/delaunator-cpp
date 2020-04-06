@@ -38,15 +38,28 @@ class Delaunator {
 
 public:
     std::vector<double> const& coords;
+    // 'triangles' stores the indices to the 'X's of the input
+    // 'coords'.
     std::vector<std::size_t> triangles;
+
+    // 'halfedges' store indices into 'triangles'.  If halfedges[X] = Y,
+    // It says that there's an edge from X to Y where a) X and Y are
+    // both indices into triangles and b) X and Y are indices into different
+    // triangles in the array.  This allows you to get from a triangle to
+    // its adjacent triangle.  If the a triangle edge has no adjacent triangle,
+    //  it half edge will be INVALID_INDEX.
     std::vector<std::size_t> halfedges;
+
     std::vector<std::size_t> hull_prev;
     std::vector<std::size_t> hull_next;
+
+    // This contains indexes into the triangles array.
     std::vector<std::size_t> hull_tri;
     std::size_t hull_start;
 
     INLINE Delaunator(std::vector<double> const& in_coords);
     INLINE double get_hull_area();
+    INLINE double get_triangle_area();
 
 private:
     std::vector<std::size_t> m_hash;

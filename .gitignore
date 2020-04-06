@@ -16,3 +16,5 @@ mason_packages
 .mason
 local.env
 xcode-project
+build
+.*.sw*
