@@ -524,7 +524,6 @@ double Delaunator::get_triangle_area()
     return sum(vals);
 }
 
-
 std::size_t Delaunator::legalize(std::size_t a) {
     std::size_t i = 0;
     std::size_t ar = 0;

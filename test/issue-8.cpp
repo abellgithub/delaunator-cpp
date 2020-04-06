@@ -26,8 +26,7 @@ std::ostream& operator<<(std::ostream& out, const Point2D& p)
     return out;
 }
 
-Point2D rotate(Point2D const& p_in, Point2D const& center,
-    double const& angle_deg)
+Point2D rotate(Point2D const& p_in, double const& angle_deg)
 {
     const double pi        = 3.14159265358979323846;
     const double angle_rad = angle_deg * pi / 180.0;
@@ -35,23 +34,12 @@ Point2D rotate(Point2D const& p_in, Point2D const& center,
     const double c         = cos(angle_rad);
     Point2D p;
 
-    // translate point back to origin:
-    /**
-    p.x = p_in.x - center.x;
-    p.y = p_in.y - center.y;
-    **/
     p = p_in;
 
     // rotate point
     double tmp = p.x * c - p.y * s;
     p.y = p.x * s + p.y * c;
     p.x = tmp;
-
-    // translate point back:
-    /**
-    p.x += center.x;
-    p.y += center.y;
-    **/
 
     return p;
 }
@@ -70,15 +58,13 @@ bool approx(double v1, double v2)
 
 void testRotation(double angle)
 {
-    const size_t  grid_size = 6;
-    const Point2D center(0, 0);
-
+    const size_t grid_size = 6;
     std::vector<double> points;
 
     // Generate rotated point grid of 1-by-1 squares.
     for (size_t x = 0; x < grid_size; ++x) {
         for (size_t y = 0; y < grid_size; ++y) {
-            Point2D p = rotate(Point2D(x, y), center, angle);
+            Point2D p = rotate(Point2D(x, y), angle);
             points.push_back(p.x);
             points.push_back(p.y);
         }
@@ -146,7 +132,6 @@ void testRotation(double angle)
 
 TEST(Delaunator, issue_2)
 {
-//    testRotation(0);
     for (double angle = 0; angle < 360; angle += .1)
         testRotation(angle);
 }
