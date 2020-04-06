@@ -59,6 +59,7 @@ public:
 
     INLINE Delaunator(std::vector<double> const& in_coords);
     INLINE double get_hull_area();
+    INLINE double get_triangle_area();
 
 private:
     std::vector<std::size_t> m_hash;

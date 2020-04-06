@@ -22,5 +22,5 @@ function(d_add_test _testfile)
 endfunction()
 
 enable_testing()
-d_add_test(issue-2.cpp)
+d_add_test(issue-8.cpp)
 d_add_test(delaunator.test.cpp)

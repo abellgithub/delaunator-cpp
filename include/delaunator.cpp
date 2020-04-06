@@ -449,6 +449,23 @@ double Delaunator::get_hull_area() {
     return sum(hull_area);
 }
 
+double Delaunator::get_triangle_area()
+{
+    std::vector<double> vals;
+    for (size_t i = 0; i < triangles.size(); i += 3)
+    {
+        const double ax = coords[2 * triangles[i]];
+        const double ay = coords[2 * triangles[i] + 1];
+        const double bx = coords[2 * triangles[i + 1]];
+        const double by = coords[2 * triangles[i + 1] + 1];
+        const double cx = coords[2 * triangles[i + 2]];
+        const double cy = coords[2 * triangles[i + 2] + 1];
+        double val = std::fabs((by - ay) * (cx - bx) - (bx - ax) * (cy - by));
+        vals.push_back(val);
+    }
+    return sum(vals);
+}
+
 std::size_t Delaunator::legalize(std::size_t a) {
     std::size_t i = 0;
     std::size_t ar = 0;
