@@ -130,7 +130,7 @@ void testRotation(double angle)
     }
 }
 
-TEST(Delaunator, issue_2)
+TEST(Delaunator, issue_8)
 {
     for (double angle = 0; angle < 360; angle += .1)
         testRotation(angle);
