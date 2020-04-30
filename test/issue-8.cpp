@@ -34,7 +34,6 @@ Point2D rotate(Point2D const& p_in, double const& angle_deg)
     const double c         = cos(angle_rad);
     Point2D p;
 
-    // translate point back to origin:
     p = p_in;
 
     // rotate point
@@ -131,7 +130,7 @@ void testRotation(double angle)
     }
 }
 
-TEST(Delaunator, issue_2)
+TEST(Delaunator, issue_8)
 {
     for (double angle = 0; angle < 360; angle += .1)
         testRotation(angle);
