@@ -3,7 +3,7 @@
 A really fast C++ library for
 [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation) of 2D points.
 
-delaunator-cpp was originally a a C++ port from https://github.com/mapbox/delaunator a JavaScript implementation of very fast 2D Delaunay algorithm.  It has since diverged from that source.
+delaunator-cpp was originally a a C++ port from https://github.com/mapbox/delaunator, a JavaScript implementation of very fast 2D Delaunay algorithm.  It has since diverged from that source.
 
 <!---
 [![Build Status](https://travis-ci.org/delfrrr/delaunator-cpp.svg?branch=master)](https://travis-ci.org/delfrrr/delaunator-cpp)
@@ -12,7 +12,7 @@ delaunator-cpp was originally a a C++ port from https://github.com/mapbox/delaun
 
 ## Features
 
-* Probably the fastest C++ open source 2D Delaunay implementation
+* A fast C++ open source 2D Delaunay implementation
 * Example showing triangulation of GeoJson points
 
 ## Usage
