@@ -9,6 +9,7 @@
 #include <limits>
 #include <stdexcept>
 #include <tuple>
+#include <vector>
 
 namespace delaunator {
 
@@ -160,45 +161,6 @@ inline Point circumcenter(
     return Point(x, y);
 }
 
-
-struct compare {
-
-    std::vector<double> const& m_coords;
-    std::vector<double> m_dists;
-
-    compare(std::vector<double> const& coords, const Point& center) :
-        m_coords(coords)
-    {
-        size_t n = m_coords.size() / 2;
-        m_dists.reserve(n);
-        double const *xcoord = m_coords.data();
-        double const *ycoord = m_coords.data() + 1;
-        while (n--)
-        {
-            m_dists.push_back(dist(*xcoord, *ycoord, center.x(), center.y()));
-            xcoord += 2;
-            ycoord += 2;
-        }
-    }
-
-    bool operator()(std::size_t i, std::size_t j)
-    {
-        const double diff1 = m_dists[i] - m_dists[j];
-        const double diff2 = m_coords[2 * i] - m_coords[2 * j];
-        const double diff3 = m_coords[2 * i + 1] - m_coords[2 * j + 1];
-
-        //ABELL - Not sure why we're not just checking != 0 here.
-        if (diff1 > 0.0 || diff1 < 0.0) {
-            return diff1 < 0;
-        } else if (diff2 > 0.0 || diff2 < 0.0) {
-            return diff2 < 0;
-        } else {
-            return diff3 < 0;
-        }
-    }
-};
-
-
 inline bool in_circle(
     const double ax,
     const double ay,
@@ -327,8 +289,20 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
     m_center = circumcenter(i0x, i0y, i1x, i1y, i2x, i2y);
 
+    // Calculate the distances from the center once to avoid having to
+    // calculate for each compare.  This used to be done in the comparator,
+    // but GCC 7.5+ would copy the comparator to iterators used in the
+    // sort, and this was excruciatingly slow when there were many points
+    // because you had to copy the vector of distances.
+    std::vector<double> dists;
+    dists.reserve(m_points.size());
+    for (const Point& p : m_points)
+        dists.push_back(dist(p.x(), p.y(), m_center.x(), m_center.y()));
+
     // sort the points by distance from the seed triangle circumcenter
-    std::sort(ids.begin(), ids.end(), compare{ coords, m_center });
+    std::sort(ids.begin(), ids.end(),
+        [&dists](std::size_t i, std::size_t j)
+            { return dists[i] < dists[j]; });
 
     // initialize a hash table for storing edges of the advancing convex hull
     m_hash_size = static_cast<std::size_t>(std::ceil(std::sqrt(n)));
