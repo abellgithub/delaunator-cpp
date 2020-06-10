@@ -220,7 +220,7 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         max_y = std::max(p.y(), max_y);
     }
     double width = max_x - min_x;
-    double height = max_x - min_y;
+    double height = max_y - min_y;
     double span = width * width + height * height; // Everything is square dist.
 
     Point center((min_x + max_x) / 2, (min_y + max_y) / 2);
