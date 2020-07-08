@@ -18,3 +18,5 @@ local.env
 xcode-project
 build
 .*.sw*
+
+include/delaunator_config.hpp

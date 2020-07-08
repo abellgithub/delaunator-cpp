@@ -1,5 +1,0 @@
-#pragma once
-
-/* #undef DELAUNATOR_HEADER_ONLY */
-
-#define DELAUNATOR_SINGLE_PRECISION
