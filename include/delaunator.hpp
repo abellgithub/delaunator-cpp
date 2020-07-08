@@ -1,5 +1,7 @@
 #pragma once
 
+#include "delaunator_config.hpp"
+
 #ifdef DELAUNATOR_HEADER_ONLY
 #define INLINE inline
 #else
