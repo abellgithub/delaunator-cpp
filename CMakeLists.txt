@@ -19,6 +19,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${D_BIN_DIR})
 add_library(delaunator include/delaunator.cpp)
 d_target_compile_settings(delaunator)
 
+if (DELAUNATOR_SINGLE_PRECISION)
+    target_compile_definitions(delaunator PUBLIC DELAUNATOR_SINGLE_PRECISION)
+endif()
+
 add_subdirectory(test)
 
 #examples
