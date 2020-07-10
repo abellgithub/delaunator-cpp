@@ -14,6 +14,12 @@ include(FeatureSummary)
 include(${D_CMAKE_DIR}/options.cmake)
 include(${D_CMAKE_DIR}/gtest.cmake)
 
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/delaunator_config.hpp.in
+    ${CMAKE_CURRENT_LIST_DIR}/include/delaunator_config.hpp
+    @ONLY
+)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${D_BIN_DIR})
 
 add_library(delaunator include/delaunator.cpp)

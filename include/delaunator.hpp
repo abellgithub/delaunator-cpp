@@ -1,9 +1,17 @@
 #pragma once
 
+#include "delaunator_config.hpp"
+
 #ifdef DELAUNATOR_HEADER_ONLY
 #define INLINE inline
 #else
 #define INLINE
+#endif
+
+#ifdef DELAUNATOR_SINGLE_PRECISION
+typedef float dfloat;
+#else
+typedef double dfloat;
 #endif
 
 #include <limits>
@@ -18,21 +26,21 @@ constexpr std::size_t INVALID_INDEX =
 class Point
 {
 public:
-    Point(double x, double y) : m_x(x), m_y(y)
+    Point(dfloat x, dfloat y) : m_x(x), m_y(y)
     {}
     Point() : m_x(0), m_y(0)
     {}
 
-    double x() const
+    dfloat x() const
     { return m_x; }
 
-    double y() const
+    dfloat y() const
     { return m_y; }
 
-    double magnitude2() const
+    dfloat magnitude2() const
     { return m_x * m_x + m_y * m_y; }
 
-    static double determinant(const Point& p1, const Point& p2)
+    static dfloat determinant(const Point& p1, const Point& p2)
     {
         return p1.m_x * p2.m_y - p1.m_y * p2.m_x;
     }
@@ -42,15 +50,15 @@ public:
         return Point(p2.m_x - p1.m_x, p2.m_y - p1.m_y);
     }
 
-    static double dist2(const Point& p1, const Point& p2)
+    static dfloat dist2(const Point& p1, const Point& p2)
     {
         Point vec = vector(p1, p2);
         return vec.m_x * vec.m_x + vec.m_y * vec.m_y;
     }
 
-    static bool equal(const Point& p1, const Point& p2, double span)
+    static bool equal(const Point& p1, const Point& p2, dfloat span)
     {
-        double dist = dist2(p1, p2) / span;
+        dfloat dist = dist2(p1, p2) / span;
 
         // ABELL - This number should be examined to figure how how
         // it correlates with the breakdown of calculating determinants.
@@ -58,8 +66,8 @@ public:
     }
 
 private:
-    double m_x;
-    double m_y;
+    dfloat m_x;
+    dfloat m_y;
 };
 
 inline std::ostream& operator<<(std::ostream& out, const Point& p)
@@ -74,7 +82,7 @@ class Points
 public:
     using const_iterator = Point const *;
 
-    Points(const std::vector<double>& coords) : m_coords(coords)
+    Points(const std::vector<dfloat>& coords) : m_coords(coords)
     {}
 
     const Point& operator[](size_t offset)
@@ -92,13 +100,13 @@ public:
         { return m_coords.size() / 2; }
 
 private:
-    const std::vector<double>& m_coords;
+    const std::vector<dfloat>& m_coords;
 };
 
 class Delaunator {
 
 public:
-    std::vector<double> const& coords;
+    std::vector<dfloat> const& coords;
     Points m_points;
 
     // 'triangles' stores the indices to the 'X's of the input
@@ -120,9 +128,9 @@ public:
     std::vector<std::size_t> hull_tri;
     std::size_t hull_start;
 
-    INLINE Delaunator(std::vector<double> const& in_coords);
-    INLINE double get_hull_area();
-    INLINE double get_triangle_area();
+    INLINE Delaunator(std::vector<dfloat> const& in_coords);
+    INLINE dfloat get_hull_area();
+    INLINE dfloat get_triangle_area();
 
 private:
     std::vector<std::size_t> m_hash;
@@ -131,7 +139,7 @@ private:
     std::vector<std::size_t> m_edge_stack;
 
     INLINE std::size_t legalize(std::size_t a);
-    INLINE std::size_t hash_key(double x, double y) const;
+    INLINE std::size_t hash_key(dfloat x, dfloat y) const;
     INLINE std::size_t add_triangle(
         std::size_t i0,
         std::size_t i1,
