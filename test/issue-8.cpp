@@ -98,7 +98,7 @@ void testRotation(dfloat angle)
         dfloat len_1 = distance(p1, p2);
         dfloat len_2 = distance(p2, p3);
         dfloat len_3 = distance(p3, p1);
-        dfloat area =  fabs((p1.x * (p2.y - p3.y) +
+        dfloat area  = fabs((p1.x * (p2.y - p3.y) +
                              p2.x * (p3.y - p1.y) +
                              p3.x * (p1.y - p2.y)) / 2.0);
 
