@@ -23,10 +23,14 @@ inline void validate(const std::vector<dfloat>& coords) {
     }
 
     //validate triangulation
-    double hull_area = d.get_hull_area();
-    double tri_area = d.get_triangle_area();
+    dfloat hull_area = d.get_hull_area();
+    dfloat tri_area = d.get_triangle_area();
 
+#ifdef DELAUNATOR_USE_SINGLE
+    EXPECT_FLOAT_EQ(tri_area, hull_area);
+#else
     EXPECT_DOUBLE_EQ(tri_area, hull_area);
+#endif
 }
 
 } // namespace
