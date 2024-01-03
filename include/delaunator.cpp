@@ -472,11 +472,9 @@ double Delaunator::get_hull_area()
 {
     std::vector<double> hull_area;
     size_t e = hull_start;
-    size_t cnt = 1;
     do {
         hull_area.push_back((coords[2 * e] - coords[2 * hull_prev[e]]) *
             (coords[2 * e + 1] + coords[2 * hull_prev[e] + 1]));
-        cnt++;
         e = hull_next[e];
     } while (e != hull_start);
     return sum(hull_area);
@@ -493,6 +491,8 @@ double Delaunator::get_triangle_area()
         const double by = coords[2 * triangles[i + 1] + 1];
         const double cx = coords[2 * triangles[i + 2]];
         const double cy = coords[2 * triangles[i + 2] + 1];
+        //ABELL - Is this right? It looks like a cross-product, which would give you twice the area.
+        //  Test.
         double val = std::fabs((by - ay) * (cx - bx) - (bx - ax) * (cy - by));
         vals.push_back(val);
     }
