@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <numeric>
 #include <limits>
