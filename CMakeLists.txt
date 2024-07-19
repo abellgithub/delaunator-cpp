@@ -23,7 +23,11 @@ add_subdirectory(test)
 
 #examples
 #add_executable(triangulate-geojson examples/triangulate_geojson.cpp include/delaunator.cpp)
-#add_executable(basic examples/basic.cpp include/delaunator.cpp)
+add_executable(basic examples/basic.cpp include/delaunator.cpp)
+target_include_directories(basic
+    PRIVATE
+        include
+)
 
 #set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 #set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
