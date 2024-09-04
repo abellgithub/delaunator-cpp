@@ -94,7 +94,6 @@ inline bool clockwise(const Point& p0, const Point& p1, const Point& p2)
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
     double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     if (det == 0)
     {
         return false;
@@ -120,7 +119,6 @@ inline bool counterclockwise(const Point& p0, const Point& p1, const Point& p2)
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
     double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     if (det == 0)
         return false;
     double reldet = std::abs(dist / det);
