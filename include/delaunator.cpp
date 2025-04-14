@@ -71,7 +71,6 @@ inline bool clockwise(const Point& p0, const Point& p1, const Point& p2)
         return false;
 
     double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
@@ -96,7 +95,6 @@ inline bool counterclockwise(const Point& p0, const Point& p1, const Point& p2)
         return false;
 
     double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
