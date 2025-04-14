@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10)
 project(delaunator VERSION 0.4.0)
 
 set(ROOT_DIR ${PROJECT_SOURCE_DIR})

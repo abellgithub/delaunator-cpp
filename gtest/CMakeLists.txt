@@ -46,14 +46,9 @@ endif()
 
 # Project version:
 
-if (CMAKE_VERSION VERSION_LESS 3.0)
-  project(gtest CXX C)
-  set(PROJECT_VERSION ${GOOGLETEST_VERSION})
-else()
-  cmake_policy(SET CMP0048 NEW)
-  project(gtest VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
-endif()
-cmake_minimum_required(VERSION 2.6.4)
+cmake_policy(SET CMP0048 NEW)
+project(gtest VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
+cmake_minimum_required(VERSION 3.10)
 
 if (POLICY CMP0063) # Visibility
   cmake_policy(SET CMP0063 NEW)
@@ -130,14 +125,12 @@ cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 # If the CMake version supports it, attach header directory information
 # to the targets for when we are part of a parent build (ie being pulled
 # in via add_subdirectory() rather than being a standalone build).
-if (DEFINED CMAKE_VERSION AND NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
-  target_include_directories(gtest SYSTEM INTERFACE
-    "$<BUILD_INTERFACE:${gtest_build_include_dirs}>"
-    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-  target_include_directories(gtest_main SYSTEM INTERFACE
-    "$<BUILD_INTERFACE:${gtest_build_include_dirs}>"
-    "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-endif()
+target_include_directories(gtest SYSTEM INTERFACE
+  "$<BUILD_INTERFACE:${gtest_build_include_dirs}>"
+  "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+target_include_directories(gtest_main SYSTEM INTERFACE
+  "$<BUILD_INTERFACE:${gtest_build_include_dirs}>"
+  "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 target_link_libraries(gtest_main PUBLIC gtest)
 
 ########################################################################

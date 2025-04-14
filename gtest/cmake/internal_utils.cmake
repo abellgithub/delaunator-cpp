@@ -175,17 +175,11 @@ function(cxx_library_with_type name type cxx_flags)
     set_target_properties(${name}
       PROPERTIES
       COMPILE_DEFINITIONS "GTEST_CREATE_SHARED_LIBRARY=1")
-    if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
-      target_compile_definitions(${name} INTERFACE
-        $<INSTALL_INTERFACE:GTEST_LINKED_AS_SHARED_LIBRARY=1>)
-    endif()
+    target_compile_definitions(${name} INTERFACE
+      $<INSTALL_INTERFACE:GTEST_LINKED_AS_SHARED_LIBRARY=1>)
   endif()
   if (DEFINED GTEST_HAS_PTHREAD)
-    if ("${CMAKE_VERSION}" VERSION_LESS "3.1.0")
-      set(threads_spec ${CMAKE_THREAD_LIBS_INIT})
-    else()
-      set(threads_spec Threads::Threads)
-    endif()
+    set(threads_spec Threads::Threads)
     target_link_libraries(${name} PUBLIC ${threads_spec})
   endif()
 endfunction()
@@ -238,9 +232,6 @@ function(cxx_executable name dir libs)
   cxx_executable_with_flags(
     ${name} "${cxx_default}" "${libs}" "${dir}/${name}.cc" ${ARGN})
 endfunction()
-
-# Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
-find_package(PythonInterp)
 
 # cxx_test_with_flags(name cxx_flags libs srcs...)
 #

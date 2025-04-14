@@ -62,43 +62,16 @@ inline double circumradius(const Point& p1, const Point& p2, const Point& p3)
     return (std::numeric_limits<double>::max)();
 }
 
-inline double circumradius(
-    const double ax,
-    const double ay,
-    const double bx,
-    const double by,
-    const double cx,
-    const double cy) {
-    const double dx = bx - ax;
-    const double dy = by - ay;
-    const double ex = cx - ax;
-    const double ey = cy - ay;
-
-    const double bl = dx * dx + dy * dy;
-    const double cl = ex * ex + ey * ey;
-    const double d = dx * ey - dy * ex;
-
-    const double x = (ey * bl - dy * cl) * 0.5 / d;
-    const double y = (dx * cl - ex * bl) * 0.5 / d;
-
-    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) && (d > 0.0 || d < 0.0)) {
-        return x * x + y * y;
-    } else {
-        return (std::numeric_limits<double>::max)();
-    }
-}
-
 inline bool clockwise(const Point& p0, const Point& p1, const Point& p2)
 {
     Point v0 = Point::vector(p0, p1);
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
+    if (det == 0)
+        return false;
+
     double dist = v0.magnitude2() + v1.magnitude2();
     double dist2 = Point::dist2(v0, v1);
-    if (det == 0)
-    {
-        return false;
-    }
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
@@ -119,10 +92,11 @@ inline bool counterclockwise(const Point& p0, const Point& p1, const Point& p2)
     Point v0 = Point::vector(p0, p1);
     Point v1 = Point::vector(p0, p2);
     double det = Point::determinant(v0, v1);
-    double dist = v0.magnitude2() + v1.magnitude2();
-    double dist2 = Point::dist2(v0, v1);
     if (det == 0)
         return false;
+
+    double dist = v0.magnitude2() + v1.magnitude2();
+    double dist2 = Point::dist2(v0, v1);
     double reldet = std::abs(dist / det);
     if (reldet > 1e14)
         return false;
@@ -248,7 +222,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
     // find the point closest to the seed
     for (std::size_t i = 0; i < n; i++) {
-        if (i == i0) continue;
+        if (i == i0)
+            continue;
         const double d = Point::dist2(p0, m_points[i]);
         if (d < min_dist && d > 0.0) {
             i1 = i;
@@ -263,7 +238,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     // find the third point which forms the smallest circumcircle
     // with the first two
     for (std::size_t i = 0; i < n; i++) {
-        if (i == i0 || i == i1) continue;
+        if (i == i0 || i == i1)
+            continue;
 
         const double r = circumradius(p0, p1, m_points[i]);
         if (r < min_radius) {
@@ -317,8 +293,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
     hull_tri.resize(n);
 
     hull_start = i0;
-
-    size_t hull_size = 3;
 
     hull_next[i0] = hull_prev[i2] = i1;
     hull_next[i1] = hull_prev[i0] = i2;
@@ -420,7 +394,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
 
         hull_tri[i] = legalize(t + 2); // Legalize the triangle we just added.
         hull_tri[e] = t;
-        hull_size++;
 
         // walk forward through the hull, adding more triangles and
         // flipping recursively
@@ -435,7 +408,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
                 hull_tri[i], INVALID_INDEX, hull_tri[next]);
             hull_tri[i] = legalize(t + 2);
             hull_next[next] = next; // mark as removed
-            hull_size--;
             next = q;
         }
 
@@ -452,7 +424,6 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
                 legalize(t + 2);
                 hull_tri[q] = t;
                 hull_next[e] = e; // mark as removed
-                hull_size--;
                 e = q;
             }
         }
