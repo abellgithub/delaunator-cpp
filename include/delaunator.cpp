@@ -176,7 +176,9 @@ inline double pseudo_angle(const double dx, const double dy) {
 Delaunator::Delaunator(std::vector<double> const& in_coords)
     : coords(in_coords), m_points(in_coords)
 {
-    std::size_t n = coords.size() >> 1;
+    std::size_t n = m_points.size();
+    if (n < 3)
+        throw std::runtime_error("Can't triangulate fewer than three points.");
 
     std::vector<std::size_t> ids(n);
     std::iota(ids.begin(), ids.end(), 0);
@@ -229,6 +231,9 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         }
     }
 
+    if (i1 == INVALID_INDEX)
+        throw std::runtime_error("All points are duplicates of one another.");
+
     const Point& p1 = m_points[i1];
 
     double min_radius = (std::numeric_limits<double>::max)();
@@ -246,9 +251,8 @@ Delaunator::Delaunator(std::vector<double> const& in_coords)
         }
     }
 
-    if (!(min_radius < (std::numeric_limits<double>::max)())) {
-        throw std::runtime_error("not triangulation");
-    }
+    if (i2 == INVALID_INDEX)
+        throw std::runtime_error("All points collinear");
 
     const Point& p2 = m_points[i2];
 
